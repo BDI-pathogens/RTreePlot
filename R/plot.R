@@ -73,7 +73,7 @@
 # private function to calculate the position of the lines to join the nodes
 # in the tree
 #
-.tree_calculate_lines = function( dt_lines, max_lines = 1000 )
+.tree_calculate_lines = function( dt_lines, max_edges = 1000 )
 {
   one_line = function( x0,y0,x1,y1 )
   {
@@ -89,9 +89,9 @@
     ) )
   }
 
-  if( dt_lines[,.N] > max_lines )
+  if( dt_lines[,.N] > max_edges )
   {
-    min_N = dt_lines[order(-N)][max_lines,N]
+    min_N = dt_lines[order(-N)][max_edges,N]
     used_lines = dt_lines[ N >= min_N]
   } else
     used_lines = copy( dt_lines )
@@ -113,7 +113,7 @@ treeplot.plot = function(
   parent_ids,
   child_ids,
   times,
-  max_lines = 1000,
+  max_edges = 1000,
   interactive = TRUE,
   show = TRUE,
   height = 1000
@@ -139,7 +139,7 @@ treeplot.plot = function(
   all[ , text := sprintf( "ID    = %d\nN_tot = %d\nN_dir = %d\n", child, N, N_direct)]
 
   dt_lines = all[ !is.na(pos_p)]
-  lines = .tree_calculate_lines( dt_lines, max_lines = max_lines )
+  lines = .tree_calculate_lines( dt_lines, max_edges = max_edges )
 
   # calculate the plot
   if( interactive )
@@ -161,7 +161,7 @@ treeplot.plot = function(
         return()
 
       used_lines = dt_lines[ time_min <= xmax & time >= xmin & pmax( pos, pos_p ) >= ymin & pmin( pos, pos_p ) <= ymax ]
-      lines = .tree_calculate_lines( used_lines, max_lines = max_lines )
+      lines = .tree_calculate_lines( used_lines, max_edges = max_edges )
 
       pl$setRV("shapes", lines)
       pl$setRV("data", all[ pos <= ymax & pos >= ymin & time >= xmin & time <= xmax ])
