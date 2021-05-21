@@ -113,6 +113,7 @@ treeplot.plot = function(
   parent_ids,
   child_ids,
   times,
+  colors = NULL,
   max_edges = 1000,
   interactive = TRUE,
   show = TRUE,
@@ -138,6 +139,16 @@ treeplot.plot = function(
   all[ , size :=  pmin(N_direct+1,20) / 10 ]
   all[ , text := sprintf( "ID    = %d\nN_tot = %d\nN_dir = %d\n", child, N, N_direct)]
 
+  # add in colors
+  if( is.null( colors ) )
+    colors = rep( "a", n_nodes )
+
+  t_col = data.table(
+    child = child_ids,
+    colors = colors
+  )
+  all = t_col[ all, on = "child" ]
+
   dt_lines = all[ !is.na(pos_p)]
   lines = .tree_calculate_lines( dt_lines, max_edges = max_edges )
 
@@ -147,6 +158,7 @@ treeplot.plot = function(
     pl = utils.plotly.scatter(
       all,
       c("time", "pos"),
+      colorCol = "colors",
       shapes = lines,
       scatterType = "scattergl",
       height = height,
@@ -174,6 +186,7 @@ treeplot.plot = function(
       all,
       x = ~time,
       y = ~pos,
+      color = ~colors,
       type = "scattergl",
       mode = "markers",
       height = height
@@ -185,7 +198,6 @@ treeplot.plot = function(
 
     if( show )
       show( pl )
-
   }
 
   return( pl )
